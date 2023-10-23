@@ -90,8 +90,6 @@ io.on('connection', (socket) => {
             return
         }
 
-        socket.emit("NEXT_CHAT")
-
         const room_name = socketToRoom.get(socket.id)
         socketToRoom.delete(socket.id)
         socket.emit("PEER_DISCONNECTED")  // To notify client to create new peer object
@@ -104,7 +102,6 @@ io.on('connection', (socket) => {
         peer_socket.emit("PEER_DISCONNECTED") // To notify client to create new peer object
         socketToRoom.delete(peer_socket.id)
         peer_socket.leave(room_name)
-        peer_socket.emit("NEXT_CHAT")
 
         processSocket(peer_socket);
 

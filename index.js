@@ -90,16 +90,21 @@ io.on('connection', (socket) => {
             return
         }
 
+        socket.emit("NEXT_CHAT")
+
         const room_name = socketToRoom.get(socket.id)
         socketToRoom.delete(socket.id)
+        socket.emit("PEER_DISCONNECTED")  // To notify client to create new peer object
         socket.leave(room_name)
 
         processSocket(socket)
 
         let sockets_array = await io.in(room_name).fetchSockets();
         let peer_socket = sockets_array[0];
+        peer_socket.emit("PEER_DISCONNECTED") // To notify client to create new peer object
         socketToRoom.delete(peer_socket.id)
         peer_socket.leave(room_name)
+        peer_socket.emit("NEXT_CHAT")
 
         processSocket(peer_socket);
 
@@ -126,6 +131,7 @@ io.on('connection', (socket) => {
                 peer_socket.leave(room_name)
 
                 // If the peer socket exist in room 
+                peer_socket.emit("PEER_DISCONNECTED")  // To notify client to create new peer object
                 if (peer_socket) processSocket(peer_socket);
 
             } catch (e) {

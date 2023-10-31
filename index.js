@@ -83,6 +83,10 @@ io.on('connection', (socket) => {
         socket.to(socketToRoom.get(socket.id)).emit("ICE_CANDIDATE", ice_candidate)
     })
 
+    socket.on("USER_TYPING", () => {
+        socket.to(socketToRoom.get(socket.id)).emit("NOTIFICATION", "Stranger Typing ...")
+    })
+
     socket.on("NEXT_CHAT", async () => {
 
         if ( user_count <= 2 ) {

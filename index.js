@@ -99,20 +99,18 @@ io.on('connection', (socket) => {
         socket.emit("PEER_DISCONNECTED")  // To notify client to create new peer object
         socket.leave(room_name)
 
-        processSocket(socket)
-
         let sockets_array = await io.in(room_name).fetchSockets();
         let peer_socket = sockets_array[0];
         
-        // If the user who is not connected with anyone, sends the request for next chat
-        // So checking if peer_socket is available then only do this request
-        if(peer_socket) {
-            peer_socket.emit("PEER_DISCONNECTED") // To notify client to create new peer object
-            socketToRoom.delete(peer_socket.id)
-            peer_socket.leave(room_name)
+        if(peer_socket === undefined) return;
 
-            processSocket(peer_socket);
-        }
+        processSocket(socket)
+
+        peer_socket.emit("PEER_DISCONNECTED") // To notify client to create new peer object
+        socketToRoom.delete(peer_socket.id)
+        peer_socket.leave(room_name)
+
+        processSocket(peer_socket);
 
     })
 

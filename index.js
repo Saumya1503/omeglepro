@@ -69,17 +69,17 @@ io.on('connection', (socket) => {
     })
 
     socket.on("OFFER", (offer) => {
-        console.log("OFFER ", offer)
+        // console.log("OFFER ", offer)
         socket.to(socketToRoom.get(socket.id)).emit("OFFER", offer)
     })
 
     socket.on("ANSWER", (answer) => {
-        console.log("ANSWER ", answer)
+        // console.log("ANSWER ", answer)
         socket.to(socketToRoom.get(socket.id)).emit("ANSWER", answer)
     })
 
     socket.on("ICE_CANDIDATE", (ice_candidate) => {
-        console.log("ICE_CAN", ice_candidate)
+        // console.log("ICE_CAN", ice_candidate)
         socket.to(socketToRoom.get(socket.id)).emit("ICE_CANDIDATE", ice_candidate)
     })
 
@@ -103,11 +103,16 @@ io.on('connection', (socket) => {
 
         let sockets_array = await io.in(room_name).fetchSockets();
         let peer_socket = sockets_array[0];
-        peer_socket.emit("PEER_DISCONNECTED") // To notify client to create new peer object
-        socketToRoom.delete(peer_socket.id)
-        peer_socket.leave(room_name)
+        
+        // If the user who is not connected with anyone, sends the request for next chat
+        // So checking if peer_socket is available then only do this request
+        if(peer_socket) {
+            peer_socket.emit("PEER_DISCONNECTED") // To notify client to create new peer object
+            socketToRoom.delete(peer_socket.id)
+            peer_socket.leave(room_name)
 
-        processSocket(peer_socket);
+            processSocket(peer_socket);
+        }
 
     })
 
